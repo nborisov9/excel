@@ -11,7 +11,7 @@ const isDev = !isProd; // режим development
 // если dev разработка, то файлы прописываются без hash, если prod разработка то с hash
 const filename = ext => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`;
 
-const jsLoadees = () => {
+const jsLoaders = () => {
 	const loaders = [
 		{
 			loader: 'babel-loader',
@@ -45,7 +45,7 @@ module.exports = {
 	},
 	devtool: isDev ? 'source-map' : false, // добавит к js и css файлы .map
 	devServer: {
-		port: 3000,
+		port: 999,
 		hot: isDev
 	},
 	plugins: [
@@ -88,6 +88,7 @@ module.exports = {
 			{ // babel
 				test: /\.js$/,
 				exclude: /node_modules/,
+				use: jsLoaders()
 			}
 		 ]
 	}
