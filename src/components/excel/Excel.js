@@ -14,10 +14,10 @@ export class Excel {
 		this.components = this.components.map(Component => {
 			const $el = $.create('div', Component.className);
 			const component = new Component($el); // содержимое каждого класса компонента / $el - $root для DOMListener
-			// DEBUG
-			if (component.name) {
-				window['c' + component.name] = component;
-			}
+			// // DEBUG
+			// if (component.name) {
+			// 	window['c' + component.name] = component;
+			// }
 			$el.html(component.toHTML());
 			$root.append($el); // внутрь класса .exel кладем калссы каждого блока
 			return component; // map возвращает instanceof(объект) каждого класса Component
