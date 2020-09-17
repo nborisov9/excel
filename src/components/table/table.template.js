@@ -4,31 +4,35 @@ const CODES = {
 };
 
 // структура column
-function toColumn(col) {
+function toColumn(col, index) {
 	return `
-		<div class="column">
+		<div class="column" data-type="resizable" data-col="${index}">
 			${col}
+			<div class="col-resize" data-resize="col"></div>
 		</div>
 	`;
 }
 
 
 // структура cell
-function toCell() {
+function toCell(_, col) {
 	return `
-		<div class="cell" contenteditable>
+		<div class="cell" contenteditable data-col="${col}">
 			
 		</div>
 	`;
 }
 
 
-
 // структура строк
 function createRow(index, content) {
+	const resize = index ? '<div class="row-resize" data-resize="row"></div>' : '';
 	return `
-		<div class="row">
-			<div class="row-info">${index ? index : ''}</div>
+		<div class="row" data-type="resizable">
+			<div class="row-info">
+				${index ? index : ''}
+				${resize}
+			</div>
 			<div class="row-data">${content}</div>
 		</div>
 	`;
@@ -41,11 +45,11 @@ export function createTable(rowsCount = 15) { // по умолчанию кол-
 
 	const cols = new Array(colsCount)
 		.fill('') // colsCount в данном случ. длина массива / fill() -заполняет массив одинаковыми элементами
-		.map((el, index) => {
+		.map((_, index) => {
 			return String.fromCharCode(CODES.A + index);
 		})
-		.map(el => {
-			return toColumn(el);
+		.map((el, index) => {
+			return toColumn(el, index);
 		})
 		.join('');
 
