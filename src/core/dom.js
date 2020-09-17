@@ -1,7 +1,6 @@
 class Dom {
 	constructor(selector) {
 		// #app
-
 		if (typeof selector === 'string') {
 			this.$el = document.querySelector(selector);
 		} else {
@@ -43,6 +42,30 @@ class Dom {
 			this.$el.appendChild(node);
 		}
 		return this; // для того, чтобы мы могди делать chain (цепь)
+	}
+
+	get data() {
+		return this.$el.dataset;
+	}
+
+	closest(selector) {
+		return $(this.$el.closest(selector));
+	}
+
+	getCoords() {
+		return this.$el.getBoundingClientRect(); // getBoundingClientRect - позвоилт поулчить координаты
+	}
+
+	findAll(selector) {
+		return this.$el = document.querySelectorAll(selector);
+	}
+
+	css(styles = {}) {
+		Object
+			.keys(styles) // выдает ключи объекта и возвращает их в массиве
+			.forEach(key => { // перебирает каждые ключи объекта
+				this.$el.style[key] = styles[key]; // example: style[key] - style['width'] и style['heigth'] / styles[key] - 120px...
+			});
 	}
 }
 
