@@ -15,10 +15,45 @@ class Dom {
 		return this.$el.outerHTML.trim();
 	}
 
+	text(text) {
+		if (typeof text === 'string') {
+			this.$el.textContent = text;
+			return this;
+		}
+		if (this.$el.tagName.toLowerCase() === 'input') {
+			return this.$el.value.trim();
+		}
+		return this.$el.textContent.trim();
+	}
+
 	clear() {
 		this.html('');
 		return this;
 	}
+
+	// возвращает data-id / data - уже созданный метод
+	id(parse) {
+		if (parse) {
+			const parsed = this.id().split(':'); // split верент из строки массив
+			return {
+				row: +parsed[0],
+				col: +parsed[1]
+			};
+		}
+		return this.data.id;
+	}
+
+	// добавляет класс
+	addClass(classname) {
+		this.$el.classList.add(classname);
+		return this;
+	}
+
+	removeClass(classname) {
+		this.$el.classList.remove(classname);
+		return this;
+	}
+
 
 	// функционал addEventListener
 	on(eventType, callback) {
@@ -30,6 +65,15 @@ class Dom {
 		this.$el.removeEventListener(eventType, callback);
 	}
 
+	// поиск чего-то одного
+	find(selector) {
+		return $(this.$el.querySelector(selector));
+	}
+
+	focus() {
+		this.$el.focus();
+		return this; // для того, чтобы мы могди делать chain (цепь)
+	}
 
 	// element
 	append(node) {

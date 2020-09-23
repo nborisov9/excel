@@ -1,9 +1,11 @@
 import {$} from '@core/dom';
+import {Emitter} from '@core/Emitter';
 
 export class Excel {
 	constructor(selector, options) {
 		this.$el = $(selector);
 		this.components = options.components || []; // options.components - обращение к названию переменной, при реализации options / чтобы выводило каждый класс
+		this.emitter = new Emitter(); // общий объект
 	}
 
 // переносим верстку
@@ -11,9 +13,13 @@ export class Excel {
 	getRoot() {
 		const $root = $.create('div', 'excel');
 
+		const componentsOptions = {
+			emitter: this.emitter
+		};
+
 		this.components = this.components.map(Component => {
 			const $el = $.create('div', Component.className);
-			const component = new Component($el); // содержимое каждого класса компонента / $el - $root для DOMListener
+			const component = new Component($el, componentsOptions); // содержимое каждого класса компонента / $el - $root для DOMListener
 			// // DEBUG
 			// if (component.name) {
 			// 	window['c' + component.name] = component;
@@ -31,5 +37,9 @@ export class Excel {
 		this.components.forEach(component => {
 			component.init();
 		});
+	}
+
+	destroy() {
+		this.components.forEach(component => component.destroy());
 	}
 }
