@@ -13,14 +13,18 @@ function toColumn(col, index) {
 	`;
 }
 
-
-// структура cell
-function toCell(_, col) {
-	return `
-		<div class="cell" contenteditable data-col="${col}">
-			
-		</div>
-	`;
+// засчет замыкания сохоаняется инедекс - row и ф-ция с помощью метода map вызывается с текущими значениями: _ col
+function toCell(row) {
+	return function(_, col) {
+		return `
+			<div class="cell"
+				contenteditable
+				data-col="${col}"
+				data-type="cell"
+				data-id="${row}:${col}">
+			</div>
+		`;
+	};
 }
 
 
@@ -56,14 +60,15 @@ export function createTable(rowsCount = 15) { // по умолчанию кол-
 	rows.push(createRow(null, cols)); // A, B, C ... Z
 
 	// генерирует строки сверху вниз
-	for (let i = 0; i < rowsCount; i++) {
+	for (let row = 0; row < rowsCount; row++) {
 		// генерируем ячейки
 		const cells = new Array(colsCount) // colsCount - количество мест
 				.fill('') // создаем пустые места в массиве
-				.map(toCell) // заполняем массив сожержимым метода toCell
+				// .map((_, col) => toCell(row, col)) // заполняем массив сожержимым метода toCell
+				.map(toCell(row))
 				.join('');
 
-		rows.push(createRow(i + 1, cells)); // i - цифры в строках
+		rows.push(createRow(row + 1, cells)); // i - цифры в строках / cells - сколько всего ячеек
 	}
 
 	return rows.join('');
