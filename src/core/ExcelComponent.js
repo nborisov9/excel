@@ -1,46 +1,57 @@
-import {DomListener} from '@core/DomListener';
+import {DomListener} from '@core/DomListener'
 
 export class ExcelComponent extends DomListener {
-	constructor($root, options = {}) {
-		super($root, options.listeners);
-		this.name = options.name || '';
-		this.emitter = options.emitter; // instanseof класса Emitter, находится в объекте options под ключом emitter
-		this.unsubscribers = []; // содержит отписанные функции
+  constructor($root, options = {}) {
+    super($root, options.listeners)
+    this.name = options.name || ''
+    this.emitter = options.emitter
+    this.subscribe = options.subscribe || []
+    this.store = options.store
+    this.unsubscribers = []
 
-		this.prepare();
-	}
+    this.prepare()
+  }
 
-	// Настраиваем наш компонент lj штше
-	prepare() {
+  // Настраивааем наш компонент до init
+  prepare() {}
 
-	}
+  // Возвращает шаблон компонента
+  toHTML() {
+    return ''
+  }
 
-	// возвращает шаблон компонента
-	toHTML() {
-		return '';
-	}
+  // Уведомляем слушателей про событие event
+  $emit(event, ...args) {
+    this.emitter.emit(event, ...args)
+  }
 
-	// уведомляем слушателей про событие event
-	$emit(event, ...args) {
-		this.emitter.emit(event, ...args);
-	}
+  // Подписываемся на событие event
+  $on(event, fn) {
+    const unsub = this.emitter.subscribe(event, fn)
+    this.unsubscribers.push(unsub)
+  }
 
-	// попдисываемся на событие event
-	$on(event, fn) {
-		const unsub = this.emitter.subscribe(event, fn); // когда подписываемся, мы получаем функцию из subscribe с возможностью отписаться
-		this.unsubscribers.push(unsub); // складываем новые функции в массив
-	}
+  $dispatch(action) {
+    this.store.dispatch(action)
+  }
 
-	// инициализируем наш компонент
-	// добавляем DOM слушателей
-	init() {
-		this.initDOMListeners();
-	}
+  // Сюда приходят только изменения по тем полям, на которые мы подписались
+  storeChanged() {}
 
-	// удаляем компонент
-	// чистим DOM слушателей
-	destroy() {
-		this.removeDOMListeners();
-		this.unsubscribers.forEach(unsub => unsub());
-	}
+  isWatching(key) {
+    return this.subscribe.includes(key)
+  }
+
+  // Инициализируем компонент
+  // Добавляем DOM слушателей
+  init() {
+    this.initDOMListeners()
+  }
+
+  // Удаляем компонент
+  // Чистим слушатели
+  destroy() {
+    this.removeDOMListeners()
+    this.unsubscribers.forEach(unsub => unsub())
+  }
 }

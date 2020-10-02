@@ -1,45 +1,49 @@
-// observer
-
 export class Emitter {
-	constructor() {
-		this.listeners = {};
-	}
+  constructor() {
+    this.listeners = {}
+  }
 
-	// Уведомляем слушателей если они есть
-	// eventName - то, что передаем, например строку 'formula:done'
-	// table.emit('table:select', {a: 1})
-	emit(event, ...args) {
-		if (!Array.isArray(this.listeners[event])) { // если this.listeners[event] не массив
-			return false; // тогда возвращаем false
-		}
-		this.listeners[event].forEach(listener => {
-			listener(...args); // это и есть та ф-ция, которую складывали в subscribe в push()
-		});
-		return true;
-	}
+  // dispatch, fire, trigger
+  // Уведомляем слушателе если они есть
+  // table.emit('table:select', {a: 1})
+  emit(event, ...args) {
+    if (!Array.isArray(this.listeners[event])) {
+      return false
+    }
+    this.listeners[event].forEach(listener => {
+      listener(...args)
+    })
+    return true
+  }
 
-	// подписываемся на уведомления
-	// добавляем нового слушателя
-	// formula.subscribe('table:select', () => {}) - то что будем передавать (пример)
-	subscribe(event, fn) {
-		this.listeners[event] = this.listeners[event] || []; // обращаемся к объекту по ключу event и делаем этот ключ массивом
-		this.listeners[event].push(fn); // добавляем в массив функцию
-		return () => { // функция позволяющая отписаться
-			this.listeners[event] =
-				this.listeners[event].filter(listener => listener !== fn); // оставляем все listener, которые не равны fn
-		};
-	}
+  // on, listen
+  // Подписываемся на уведомление
+  // Добавляем нового слушателя
+  // formula.subscribe('table:select', () => {})
+  subscribe(event, fn) {
+    this.listeners[event] = this.listeners[event] || []
+    this.listeners[event].push(fn)
+    return () => {
+      this.listeners[event] =
+        this.listeners[event].filter(listener => listener !== fn)
+    }
+  }
 }
 
-
-
-
-
-
-// // Example
-// const emitter = new Emitter();
-
-// emitter.subscribe('vladilen', data => console.log('sub:', data)); // для начала нужно подписаться на событие
-
-// emitter.emit('vladilen', 4222); // выводим событие
-
+// Example
+// const emitter = new Emitter()
+//
+// const unsub = emitter.subscribe('vladilen', data => console.log(data))
+// emitter.emit('1231231', 42)
+//
+// setTimeout(() => {
+//   emitter.emit('vladilen', 'After 2 seconds')
+// }, 2000)
+//
+// setTimeout(() => {
+//   unsub()
+// }, 3000)
+//
+// setTimeout(() => {
+//   emitter.emit('vladilen', 'After 4 seconds')
+// }, 4000)

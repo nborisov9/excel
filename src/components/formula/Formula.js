@@ -1,52 +1,48 @@
-import {ExcelComponent} from '@core/ExcelComponent';
-import {$} from '@core/Dom';
+import {ExcelComponent} from '@core/ExcelComponent'
+import {$} from '@core/dom'
 
 export class Formula extends ExcelComponent {
-	static className = 'excel__formula';
+  static className = 'excel__formula'
 
-	// если добавляется содержимое в listeners, то к нему нужно писать метод
-	constructor($root, options) {
-		super($root, {
-			name: 'Formula',
-			listeners: ['input', 'keydown'],
-			...options
-		});
-	}
+  constructor($root, options) {
+    super($root, {
+      name: 'Formula',
+      listeners: ['input', 'keydown'],
+      subscribe: ['currentText'],
+      ...options
+    })
+  }
 
-	toHTML() {
-		return `
-			<div class="info">fx</div>
-			<div id="formula" class="input" contenteditable spellcheck="false"></div>
-		`;
-	}
+  toHTML() {
+    return `
+      <div class="info">fx</div>
+      <div id="formula" class="input" contenteditable spellcheck="false"></div>
+    `
+  }
 
-	init() {
-		super.init();
+  init() {
+    super.init()
 
-		this.$formula = this.$root.find('#formula');
+    this.$formula = this.$root.find('#formula')
 
-		// текст из ячейки в формулу при перемещении клавиш и при клике
-		this.$on('table:select', $cell => { // $cell - это $el: div.cell.selected
-			this.$formula.text($cell.text()); // передаем текст, который в яейке в формулу
-		});
+    this.$on('table:select', $cell => {
+      this.$formula.text($cell.data.value) // парсится значение в формулу
+    })
+  }
 
-		this.$on('table:input', $cell => {
-			this.$formula.text($cell.text()); // передаем текст, который в яейке в формулу
-		});
-	}
+  storeChanged({currentText}) {
+    this.$formula.text(currentText)
+  }
 
+  onInput(event) {
+    this.$emit('formula:input', $(event.target).text())
+  }
 
-	onInput(event) {
-		const text = event.target.textContent.trim();
-		this.$emit('formula:input', text);
-	}
-
-	onKeydown(event) {
-		const keys = ['Enter', 'Tab'];
-
-		if (keys.includes(event.key)) { // если массив keys содержит в себе event.key
-			event.preventDefault();
-			this.$emit('formula:done'); // переносит фокус с формулы на текущую ячейку
-		}
-	}
+  onKeydown(event) {
+    const keys = ['Enter', 'Tab']
+    if (keys.includes(event.key)) {
+      event.preventDefault()
+      this.$emit('formula:done')
+    }
+  }
 }

@@ -1,62 +1,43 @@
-// functions helper
-import {range} from '@core/utils';
-
-
-// ==============================================================================================================================
-
-
+import {range} from '@core/utils'
 
 export function shouldResize(event) {
-	return event.target.dataset.resize;
+  return event.target.dataset.resize
 }
-
-// ==============================================================================================================================
-
-
 
 export function isCell(event) {
-	return event.target.dataset.type === 'cell';
+  return event.target.dataset.type === 'cell'
 }
 
+export function matrix($target, $current) {
+  const target = $target.id(true)
+  const current = $current.id(true)
+  const cols = range(current.col, target.col)
+  const rows = range(current.row, target.row)
 
-// ==============================================================================================================================
-
-
-export function matrix(target, curent) {
-	const cols = range(curent.col, target.col); // массив из колонок, который находится между этими двумя элеменатми
-	const rows = range(curent.row, target.row);
-
-	// с помощью reduce, мы можем соединить 2 массива
-	return cols.reduce((acc, col) => { // col - сами колонки
-		rows.forEach(row => acc.push(`${row}:${col}`));
-		return acc;
-	}, []); // acc и [] одно и то же
+  return cols.reduce((acc, col) => {
+    rows.forEach(row => acc.push(`${row}:${col}`))
+    return acc
+  }, [])
 }
 
-// ==============================================================================================================================
+export function nextSelector(key, {col, row}) {
+  const MIN_VALUE = 0
+  switch (key) {
+    case 'Enter':
+    case 'ArrowDown':
+      row++
+      break
+    case 'Tab':
+    case 'ArrowRight':
+      col++
+      break
+    case 'ArrowLeft':
+      col = col - 1 < MIN_VALUE ? MIN_VALUE : col - 1
+      break
+    case 'ArrowUp':
+      row = row - 1 < MIN_VALUE ? MIN_VALUE : row - 1
+      break
+  }
 
-// key - один из элементов массива
-export function nextSelector(key, {col, row}) { // {col, row} - id.col and id.row
-const MIN_VALUE = 0;
-
-	switch (key) {
-		case 'Enter':
-		case 'ArrowDown':
-			row++;
-			break;
-
-		case 'Tab':
-		case 'ArrowRight':
-			col++;
-			break;
-
-		case 'ArrowUp':
-			row = row - 1 < MIN_VALUE ? MIN_VALUE : row - 1;
-			break;
-
-		case 'ArrowLeft':
-			col = col - 1 < MIN_VALUE ? MIN_VALUE : col - 1;
-			break;
-	}
-	return `[data-id="${row}:${col}"]`;
+  return `[data-id="${row}:${col}"]`
 }
