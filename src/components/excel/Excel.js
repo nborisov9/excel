@@ -1,45 +1,44 @@
-import {$} from '@core/dom';
-import {Emitter} from '@core/Emitter';
+import {$} from '@core/dom'
+import {Emitter} from '@core/Emitter'
+import {StoreSubscriber} from '@core/StoreSubscriber'
 
 export class Excel {
-	constructor(selector, options) {
-		this.$el = $(selector);
-		this.components = options.components || []; // options.components - обращение к названию переменной, при реализации options / чтобы выводило каждый класс
-		this.emitter = new Emitter(); // общий объект
-	}
+  constructor(selector, options) {
+    this.$el = $(selector)
+    this.components = options.components || []
+    this.store = options.store
+    this.emitter = new Emitter()
+    this.subscriber = new StoreSubscriber(this.store)
+  }
 
-// переносим верстку
-// метод $.create находится в dom.js
-	getRoot() {
-		const $root = $.create('div', 'excel');
+  getRoot() {
+    const $root = $.create('div', 'excel')
 
-		const componentsOptions = {
-			emitter: this.emitter
-		};
+    const componentOptions = {
+      emitter: this.emitter,
+      store: this.store
+    }
 
-		this.components = this.components.map(Component => {
-			const $el = $.create('div', Component.className);
-			const component = new Component($el, componentsOptions); // содержимое каждого класса компонента / $el - $root для DOMListener
-			// // DEBUG
-			// if (component.name) {
-			// 	window['c' + component.name] = component;
-			// }
-			$el.html(component.toHTML());
-			$root.append($el); // внутрь класса .exel кладем калссы каждого блока
-			return component; // map возвращает instanceof(объект) каждого класса Component
-		});
+    this.components = this.components.map(Component => {
+      const $el = $.create('div', Component.className)
+      const component = new Component($el, componentOptions)
+      $el.html(component.toHTML())
+      $root.append($el)
+      return component
+    })
 
-		return $root;
-	}
+    return $root
+  }
 
-	render() {
-		this.$el.append(this.getRoot()); // добавляем в наш selector какое либо содердимое
-		this.components.forEach(component => {
-			component.init();
-		});
-	}
+  render() {
+    this.$el.append(this.getRoot())
 
-	destroy() {
-		this.components.forEach(component => component.destroy());
-	}
+    this.subscriber.subscribeComponents(this.components)
+    this.components.forEach(component => component.init())
+  }
+
+  destroy() {
+    this.subscriber.unsubscribeFromStore()
+    this.components.forEach(component => component.destroy())
+  }
 }
