@@ -64,3 +64,13 @@ export function debounce(fn, wait) {
 // то есть если я введу большой текст подряд и отпущу последнюю клавишу - то
 // он сохранит сразу большой текст
 // а раньше он бы сохранял изменение каждого нового введенного символа и был бы огромный спам изменений
+
+
+export function clone(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
+
+export function preventDefault(event) {
+  event.preventDefault()
+}
