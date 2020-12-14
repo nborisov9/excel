@@ -1,12 +1,11 @@
-import {Page} from '@core/Page'
-import {$} from '@core/dom'
-import {createRecordsTable} from './dashboard.functions'
-
+import { Page } from '@core/Page';
+import { $ } from '@core/dom';
+import { createRecordsTable } from './dashboard.functions';
 
 export class DashboardPage extends Page {
-	getRoot() {
-		const now = Date.now().toString()
-		return $.create('div', 'db').html(`
+  getRoot() {
+    const now = Date.now().toString();
+    return $.create('div', 'db').html(`
 		<div class="db__header">
 			<h1>Excel Панель Управления</h1>
 		</div>
@@ -22,6 +21,6 @@ export class DashboardPage extends Page {
 		<div class="db__table db__view">
 			${createRecordsTable()}
 		</div>
-  		`)
-	}
+  		`);
+  }
 }
